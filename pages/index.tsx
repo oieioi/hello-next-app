@@ -4,7 +4,7 @@ import { PostForm } from '../components/PostForm';
 import prisma, { Post } from '../lib/prisma';
 
 type Props = {
-  posts: Pick<Post, 'id', 'title' | 'content'>[];
+  posts: Pick<Post, 'id' | 'title' | 'content'>[];
 };
 
 export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
@@ -28,14 +28,16 @@ export default function Index(props: Props) {
     <>
       <PostForm />
       <div> post count: { props.posts.length }</div>
-        {props.posts.map((post) => {
-          return (
-            <div key={post.id}>
-              <h3>{post.title}</h3>
-              <p>{post.content}</p>
-            </div>
-          )
-        })}
+      <ul>
+      {props.posts.map((post: Post) => {
+        return (
+          <li key={post.id}>
+            <h3>{post.id}:{post.title}</h3>
+            <p>{post.content}</p>
+          </li>
+        )
+      })}
+      </ul>
     </>
   );
 }
