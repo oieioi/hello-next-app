@@ -1,19 +1,41 @@
 import type { GetServerSideProps } from 'next';
-import prisma from '../lib/prisma';
+import React from 'react';
+import { PostForm } from '../components/PostForm';
+import prisma, { Post } from '../lib/prisma';
 
 type Props = {
-  count: number;
+  posts: Pick<Post, 'id', 'title' | 'content'>[];
 };
 
 export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
-  const count = await prisma.user.count();
+  const posts = await prisma.post.findMany({
+    select: {
+      title: true,
+      content: true,
+      id: true
+    }
+  });
+
   return {
     props: {
-      count,
+      posts,
     }
   }
 }
 
 export default function Index(props: Props) {
-  return <div>user count: {props.count}</div>;
+  return (
+    <>
+      <PostForm />
+      <div> post count: { props.posts.length }</div>
+        {props.posts.map((post) => {
+          return (
+            <div key={post.id}>
+              <h3>{post.title}</h3>
+              <p>{post.content}</p>
+            </div>
+          )
+        })}
+    </>
+  );
 }
